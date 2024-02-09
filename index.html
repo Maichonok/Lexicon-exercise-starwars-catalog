@@ -4,9 +4,38 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Star Wars Catalog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
-    <script src="" type="module"></script>
+    <header class="header">
+      <h1>STAR WARS CATALOG</h1>
+    </header>
+    <main class="container">
+      <div class="content">
+        <div class="name-characters">
+          <h2 class="header_characters">Characters</h2>
+          <div class="loader"></div>
+          <ul class="character-list"></ul>
+        </div>
+        <div class="about-character">
+          <div class="character-details">
+            <h2 class="header_details">Details</h2>
+            <h3 class="header_name"></h3>
+            <ul class="character-info"></ul>
+          </div>
+          <div class="planet">
+            <h3 class="header_planet"></h3>
+            <ul class="planet-info"></ul>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="./index.js" type="module"></script>
   </body>
 </html>
