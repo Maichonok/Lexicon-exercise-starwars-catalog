@@ -1,9 +1,47 @@
-import { characterList, characterName, characterInfo, planetName, planetInfo } from "./constants.js";
+import {
+  characterList,
+  characterName,
+  characterInfo,
+  planetName,
+  planetInfo,
+  nextButton,
+  prevButton,
+  loaderDetails,
+  listCharacters,
+} from "./constants.js";
 
-async function fetchCharacters() {
-  const response = await fetch("https://swapi.dev/api/people/");
-  const data = await response.json();
-  return data.results;
+const totalPages = 9;
+
+const fetchCharacters = async () => {
+  renderLoading(true);
+
+  try {
+    const page = getPageFromQueryParams();
+
+    const response = await fetch(`https://swapi.dev/api/people/?page=${page}`);
+    if (response.status !== 200) {
+      throw new Error("Cannot fetch the data");
+    }
+    const data = await response.json();
+
+    displayCharactersList(data.results);
+
+    return data.results;
+  } catch (error) {
+    renderLoading(false, true);
+    console.error("Error fetching data:", error.message);
+    throw error;
+  } finally {
+    renderLoading(false);
+  }
+};
+
+function displayCharactersList(characters) {
+  characterList.innerHTML = "";
+  characters.forEach((character) => {
+    const nameElement = displayCharacter(character);
+    setupCharacterClick(nameElement, character);
+  });
 }
 
 function displayCharacter(character) {
@@ -15,81 +53,133 @@ function displayCharacter(character) {
 
 function setupCharacterClick(nameElement, character) {
   nameElement.addEventListener("click", async () => {
-    const characterResponse = await fetch(character.url);
-    const fullCharacter = await characterResponse.json();
+    characterInfo.innerHTML = "";
+    planetInfo.innerHTML = "";
 
-    const planetResponse = await fetch(fullCharacter.homeworld);
-    const planet = await planetResponse.json();
-    
-    characterName.textContent = `${character.name}`;
-    characterInfo.appendChild(characterName);
+    if (characterInfo.innerHTML === "") {
+      const fullCharacter = await fetchCharacterDetails(character.url);
+      const planet = await fetchCharacterHomeworld(fullCharacter.homeworld);
 
-    const height = document.createElement("li");
-    height.textContent = `Height: ${fullCharacter.height}`;
-    characterInfo.appendChild(height);
-
-    const mass = document.createElement("li");
-    mass.textContent = `Mass: ${fullCharacter.mass}`;
-    characterInfo.appendChild(mass);
-
-    const hairColor = document.createElement("li");
-    hairColor.textContent = `Hair color: ${fullCharacter.hair_color}`;
-    characterInfo.appendChild(hairColor);
-
-    const skinColor = document.createElement("li");
-    skinColor.textContent = `Skin color: ${fullCharacter.skin_color}`;
-    characterInfo.appendChild(skinColor);
-
-    const eyeColor = document.createElement("li");
-    eyeColor.textContent = `Eye color: ${fullCharacter.eye_color}`;
-    characterInfo.appendChild(eyeColor);
-
-    const birthYear = document.createElement("li");
-    birthYear.textContent = `Birth year: ${fullCharacter.birth_year}`;
-    characterInfo.appendChild(birthYear);
-
-    const gender = document.createElement("li");
-    gender.textContent = `Gender: ${fullCharacter.gender}`;
-    characterInfo.appendChild(gender);
-
-    planetName.textContent = `${planet.name}`;
-    planetInfo.append(planetName);
-
-    const rotationPeriod = document.createElement("li");
-    rotationPeriod.textContent = `Rotation period: ${planet.rotation_period}`;
-    planetInfo.appendChild(rotationPeriod);
-
-    const orbitalPeriod = document.createElement("li");
-    orbitalPeriod.textContent = `Orbital period: ${planet.orbital_period}`;
-    planetInfo.appendChild(orbitalPeriod);
-
-    const diameter = document.createElement("li");
-    diameter.textContent = `Diameter: ${planet.diameter}`;
-    planetInfo.appendChild(diameter);
-
-    const climate = document.createElement("li");
-    climate.textContent = `Climate: ${planet.climate}`;
-    planetInfo.appendChild(climate);
-
-    const gravity = document.createElement("li");
-    gravity.textContent = `Climate: ${planet.gravity}`;
-    planetInfo.appendChild(gravity);
-
-    const terrain = document.createElement("li");
-    terrain.textContent = `Climate: ${planet.terrain}`;
-    planetInfo.appendChild(terrain);
+      displayCharacterInfo(fullCharacter);
+      displayPlanetInfo(planet);
+    }
   });
 }
 
-fetchCharacters().then((characters) => {
-  characters.forEach((character) => {
-    const nameElement = displayCharacter(character);
-    setupCharacterClick(nameElement, character);
-  });
+async function fetchCharacterDetails(url) {
+  renderLoading(true, false, true);
+
+  const characterResponse = await fetch(url);
+
+  renderLoading(false, false, true);
+
+  return characterResponse.json();
+}
+
+async function fetchCharacterHomeworld(url) {
+  const planetResponse = await fetch(url);
+  return planetResponse.json();
+}
+
+function displayCharacterInfo(character) {
+  characterName.textContent = `${character.name}`;
+  characterInfo.appendChild(characterName);
+
+  displayCharacterAttribute("Height", character.height);
+  displayCharacterAttribute("Mass", character.mass);
+  displayCharacterAttribute("Hair color", character.hair_color);
+  displayCharacterAttribute("Skin color", character.skin_color);
+  displayCharacterAttribute("Eye color", character.eye_color);
+  displayCharacterAttribute("Birth year", character.birth_year);
+  displayCharacterAttribute("Gender", character.gender);
+}
+
+function displayCharacterAttribute(attribute, value) {
+  const attributeElement = document.createElement("li");
+  attributeElement.textContent = `${attribute}: ${value}`;
+  characterInfo.appendChild(attributeElement);
+}
+
+function displayPlanetInfo(planet) {
+  planetName.textContent = `${planet.name}`;
+  planetInfo.append(planetName);
+
+  displayPlanetAttribute("Rotation period", planet.rotation_period);
+  displayPlanetAttribute("Orbital period", planet.orbital_period);
+  displayPlanetAttribute("Diameter", planet.diameter);
+  displayPlanetAttribute("Climate", planet.climate);
+  displayPlanetAttribute("Gravity", planet.gravity);
+  displayPlanetAttribute("Terrain", planet.terrain);
+}
+
+function displayPlanetAttribute(attribute, value) {
+  const attributeElement = document.createElement("li");
+  attributeElement.textContent = `${attribute}: ${value}`;
+  planetInfo.appendChild(attributeElement);
+}
+
+function setPage(page) {
+  let url = new URL(window.location.href);
+  url.searchParams.set("page", page);
+
+  const path = url.toString();
+  window.history.pushState({ path: path }, "", path);
+
+  fetchCharacters();
+}
+
+function getPageFromQueryParams() {
+  const queryParams = new URLSearchParams(window.location.search);
+  const page = queryParams.get("page");
+
+  return page ? parseInt(page) : 1;
+}
+
+nextButton.addEventListener("click", () => {
+  const currentPage = getPageFromQueryParams();
+
+  if (currentPage < totalPages) {
+    setPage(currentPage + 1);
+  } else {
+    showMessage("There are no more pages available.");
+  }
 });
 
-async function fetchPlanets() {
-  const response = await fetch("https://swapi.dev/api/planets/");
-  const data = await response.json();
-  return data.results;
+prevButton.addEventListener("click", () => {
+  const currentPage = getPageFromQueryParams();
+
+  if (currentPage > 1) {
+    setPage(currentPage - 1);
+  } else {
+    showMessage("You are already on the first page.");
+  }
+});
+
+function showMessage(message) {
+  const messageElement = document.getElementById("message");
+  messageElement.textContent = message;
+  messageElement.style.display = "block";
+  setTimeout(() => {
+    messageElement.style.display = "none";
+  }, 3000);
 }
+
+function renderLoading(isLoading, error = false, details = false) {
+  const loader = details
+    ? document.querySelector("#loader-details")
+    : document.querySelector("#loader");
+
+  if (isLoading) {
+    loader.classList.add("loader_visible");
+    listCharacters.classList.add("character-list_hidden");
+  } else {
+    loader.classList.remove("loader_visible");
+    listCharacters.classList.remove("character-list_hidden");
+
+    if (error) {
+      console.error(error.message);
+    }
+  }
+}
+
+fetchCharacters();

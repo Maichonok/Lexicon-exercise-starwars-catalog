@@ -32,3 +32,5 @@ This is a simple Vanilla SPA that request data about characters from Star Wars a
 - The right section should be divided in to two. One of them should contain data about the character including: height, mass, hair color, skin color, eye color, birth year, species and gender. The other part should contain data about the character's home planet including: rotation period in hours, orbital period in days, diameter, climate, gravity, terrain and populations.
 
 - When data is being fetched the UI should display som sort of loading animation in the corresponding section. If you are switching to a different character, the section on contating the data should have a loading animation for example. Here is a good site for getting loading animations: [css-loaders](https://css-loaders.com/).
+
+[Go to the Star Wars Catalog](https://maichonok.github.io/Lexicon-exercise-starwars-catalog/)

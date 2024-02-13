@@ -9,58 +9,56 @@ body {
   font-family: "Roboto", sans-serif;
   font-weight: 400;
   height: 100%;
+  background-color: #424242;
 }
 
-.header {
-  width: 1440px;
-  height: 347px;
-  left: 0px;
-  top: 0px;
-  background: url(./background.jpeg);
+header {
+  position: relative;
 }
 
-h1 {
-  font-size: 64px;
+.banner {
+  position: relative;
+}
+
+.banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.banner-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 60px;
   line-height: 69px;
   letter-spacing: 0.15em;
   color: #ffd600;
   text-transform: uppercase;
-  text-align: left;
+  text-align: center;
 }
 
 .container {
   display: grid;
-  place-items: center;
-  background-color: #424242;
+  grid-template-columns: 1fr 1fr;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px 40px;
+  justify-items: stretch;
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+  margin-top: -50px;
 }
 
-.content {
-  display: flex;
-  flex-direction: row;
-  gap: 30px;
+@media screen and (max-width: 690px) {
+  .container {
+    margin-top: -30px;
+  }
 }
-
-.name-characters {
-  flex: 50%;
-  height: 420px;
-  background-color: ;
-}
-
-.about-character {
-  flex: 50%;
-  background-color: #c4c4c4;
-}
-
-h2 {
-  font-size: 30px;
-  font-weight: 400;
-  line-height: 32px;
-  letter-spacing: 0.2em;
-  text-align: center;
-  color: #ffd600;
-}
-
 .loader {
+  display: block;
   width: 50px;
   aspect-ratio: 1;
   border-radius: 50%;
@@ -68,18 +66,22 @@ h2 {
   border-right-color: #ffd600;
   animation: l2 1s infinite linear;
 }
+
+.loader-wrapper {
+  height: 100px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
 @keyframes l2 {
   to {
     transform: rotate(1turn);
   }
 }
 
-.loader ::after {
-  content: "";
-}
-
 .loader_visible {
-  display: block;
+  display: flex;
 }
 
 .character-list_hidden {
@@ -87,11 +89,39 @@ h2 {
 }
 
 ul {
-  list-style: none;
+  list-style-type: none;
+  padding: 0;
+}
+
+ul li {
+  padding: 10px 30px 15px;
+}
+
+.planet-info li,
+.character-info li {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 21px;
+  letter-spacing: 0.2em;
 }
 
 .header_characters {
+  font-size: 30px;
+  font-weight: 400;
+  line-height: 35px;
+  letter-spacing: 0.2em;
+  text-align: center;
   background-color: #535556;
+  padding: 15px;
+  font-family: Ropa Sans;
+  color: #ffd600;
+}
+
+.character-list li {
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 21px;
+  letter-spacing: 0.2em;
 }
 
 .character-list li:nth-child(3n + 1) {
@@ -104,20 +134,128 @@ ul {
   background-color: #444444;
 }
 
+@media screen and (max-width: 607px) {
+  .character-list li {
+    font-size: 20px;
+  }
+}
 .header-planet {
-  font-size: 30px;
-  font-weight: 400;
-  line-height: 35px;
-  letter-spacing: 0.2em;
-  text-align: left;
   background-color: #8e8e8e;
 }
 
-.header_details {
+.header-details {
   font-size: 30px;
   font-weight: 400;
   line-height: 35px;
   letter-spacing: 0.2em;
-  text-align: left;
+  text-align: center;
   background-color: #708788;
+  padding: 15px;
+  font-family: Ropa Sans;
+  color: #ffd600;
+}
+
+.banner {
+  position: relative;
+  width: 100%;
+}
+.banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+@media screen and (max-width: 863px) {
+  .banner-text {
+    font-size: 50px;
+    line-height: 50px;
+  }
+}
+
+@media screen and (max-width: 670px) {
+  .banner-text {
+    font-size: 45px;
+    line-height: 45px;
+  }
+}
+
+@media screen and (max-width: 607px) {
+  .banner-text {
+    font-size: 27px;
+    line-height: 36px;
+  }
+}
+
+.character-details {
+  background-color: #c4c4c4;
+}
+
+.planet {
+  background-color: #8e8e8e;
+}
+
+.header-name,
+.header-planet {
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 35px;
+  letter-spacing: 0.2em;
+  text-align: left;
+  padding: 10px 30px 10px;
+}
+.prev-button,
+.next-button {
+  padding: 10px;
+  width: 100px;
+  text-align: center;
+  background-color: #ffd600;
+  color: #535556;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 18px;
+}
+
+.prev-button:hover,
+.next-button:hover {
+  background-color: #708788;
+  color: #ffd600;
+}
+
+.prev-button[disabled],
+.next-button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.message {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f00;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  display: none;
+  z-index: 999;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+}
+
+.prev-button,
+.next-button {
+  margin: 25px 30px;
+}
+
+.character-list li {
+  cursor: pointer;
+}
+
+.planet-info li:not(.header-planet) {
+  cursor: default;
 }
